@@ -1,0 +1,9 @@
+*.txt
+*.log
+*.pyc
+models/*
+data/*
+runs/*
+ms_marco_evaluation/*.pyc
+__pycache__/*
+*/__pycache__/*
