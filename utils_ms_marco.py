@@ -42,7 +42,7 @@ def _compute_softmax(scores):
         probs.append(score / total_sum)
     return probs
 
-def write_predictions(all_features, all_results,
+def write_predictions(all_features, all_results, eval_qid_set,
                       n_best_size, max_seq_length,
                       max_answer_length, do_lower_case, output_prediction_file,
                       output_nbest_file, output_null_log_odds_file, verbose_logging,
@@ -62,6 +62,7 @@ def write_predictions(all_features, all_results,
     for (index, result) in enumerate(all_results):
         feature = all_features[result.index] 
         qid = feature.qid.split('_')[-1]
+        # qid = feature.qid
 
         prelim_predictions = []
         # keep track of the minimum score of null start+end of position 0
@@ -208,8 +209,12 @@ def write_predictions(all_features, all_results,
 
     with open(output_prediction_file, "w") as writer:
         for (qid, pred) in all_predictions.items():
-            ret = {"query_id": qid, "answers": [pred]}
-            writer.write(json.dumps(ret) + "\n")
+            if pred != "[CLS]":
+                ret = {"query_id": qid, "answers": [pred]}
+            else:
+                ret = {"query_id": qid, "answers": ['No Answer Present.']}
+            if qid in eval_qid_set:
+                writer.write(json.dumps(ret) + "\n")
 
     with open(output_nbest_file, "w") as writer:
         writer.write(json.dumps(all_nbest_json, indent=4) + "\n")

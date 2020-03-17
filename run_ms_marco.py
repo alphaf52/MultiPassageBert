@@ -261,7 +261,12 @@ def evaluate(args, model, tokenizer, prefix=""):
         output_null_log_odds_file = None
 
     features = dataset.get_features() 
-    write_predictions(features, all_results, args.n_best_size, args.max_seq_length,
+    eval_qid_set = set()
+    with open(args.reference_file, "r") as fin:
+        for line in fin:
+            item = json.loads(line.strip())
+            eval_qid_set.add(item["query_id"])
+    write_predictions(features, all_results, eval_qid_set, args.n_best_size, args.max_seq_length,
                       args.max_answer_length, args.do_lower_case, output_prediction_file,
                       output_nbest_file, output_null_log_odds_file, args.verbose_logging,
                       args.version_2_with_negative, args.null_score_diff_threshold)
